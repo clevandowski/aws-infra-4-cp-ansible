@@ -1,0 +1,43 @@
+- name: Fetch ssh public key from bastion
+  # run_once: yes
+  fetch: "src=~ubuntu/.ssh/id_rsa.pub dest=buffer/id_rsa_{{ cluster }}.pub flat=yes"
+  when: vm_type == "bastion"
+
+- name: Add public ssh key from bastion to ~/.ssh/authorized_keys
+  authorized_key:
+    user: centos
+    state: present
+    key: "{{ lookup('file', 'buffer/id_rsa_{{ cluster }}.pub') }}"
+  when: vm_type != "bastion"
+
+- name: Generate .ssh/config file
+  template:
+    src: ssh_config.j2
+    dest: ~ubuntu/.ssh/config
+    owner: ubuntu
+    group: ubuntu
+  when: vm_type == "bastion"
+
+- name: Generate ansible.cfg file
+  template:
+    src: ansible_cfg.j2
+    dest: ~ubuntu/ansible.cfg
+    owner: ubuntu
+    group: ubuntu
+  when: vm_type == "bastion"
+
+- name: Generate inventory (hosts.yml) file
+  template:
+    src: hosts_yml.j2
+    dest: ~ubuntu/hosts.yml
+    owner: ubuntu
+    group: ubuntu
+  when: vm_type == "bastion"
+
+- name: Generate .env.sh
+  template:
+    src: .env_sh.j2
+    dest: ~ubuntu/.env.sh
+    owner: ubuntu
+    group: ubuntu
+  when: vm_type == "bastion"

@@ -1,0 +1,27 @@
+- name: Install ntp
+  yum:
+    name: ntp
+    update_cache: yes
+    state: present
+
+- name: Tasks for new instances
+  block:
+  - name: update all packages after provisioning of the VM
+    yum:
+      update_cache: yes
+      state: latest
+      update_only: true
+
+  - name: Check if reboot is required
+    stat:
+      path: /run/reboot-required
+    register: reboot_required_file
+
+  - name: Reboot if required
+    reboot:
+    when: reboot_required_file.stat.exists
+
+  - name: Set understandable hostname
+    hostname:
+      name: "{{ inventory_hostname }}"
+  when: ansible_hostname != inventory_hostname

@@ -1,0 +1,20 @@
+---
+- name: Host Prerequisites
+  hosts: all
+  gather_facts: true
+  tasks:
+  - import_role:
+      name: aws.common-pre
+
+  - import_role:
+      name: aws.broker
+    when:
+    - ansible_os_family == "RedHat"
+
+  - import_role:
+      name: aws.bastion
+    when:
+    - ansible_os_family == "Debian"
+
+  - import_role:
+      name: aws.common-post

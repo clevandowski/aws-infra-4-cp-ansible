@@ -1,0 +1,44 @@
+{
+  "all": {
+    "vars": {
+      "ansible_connection": "ssh",
+      "ansible_become": true,
+      "ansible_ssh_private_key_file": "/home/devops/.ssh/id_rsa",
+      "confluent_server_enabled": false,
+      "kafka_broker_service_environment_overrides": {
+        "KAFKA_JMX_OPTS": "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+      },
+      "redhat_java_package_name": "java-11-openjdk",
+      "jolokia_enabled": true,
+      "jmxexporter_enabled": true
+    }
+  },
+  "zookeeper": {
+    "vars": {
+      "ansible_user": "centos",
+      "vm_type": "zookeeper"
+    },
+    "hosts": {}
+  },
+  "kafka_broker": {
+    "vars": {
+      "ansible_user": "centos",
+      "vm_type": "kafka_broker"
+    },
+    "hosts": {}
+  },
+  "schema_registry": {
+    "vars": {
+      "ansible_user": "centos",
+      "vm_type": "schema_registry"
+    },
+    "hosts": {}
+  },
+  "bastion": {
+    "vars": {
+      "ansible_user": "ubuntu",
+      "vm_type": "bastion"
+    },
+    "hosts": {}
+  }
+}

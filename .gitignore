@@ -1,0 +1,9 @@
+cp-ansible
+ssh_config
+hosts.yml
+hosts.yml.old
+pre-cp-ansible/buffer
+terraform/.terraform*
+terraform/terraform.plan
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
