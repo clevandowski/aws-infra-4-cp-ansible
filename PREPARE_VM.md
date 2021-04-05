@@ -37,6 +37,22 @@ ansible all -m ping
 git clone https://github.com/confluentinc/cp-ansible
 ```
 
+> Les branches susceptibles d'être utilisées sont celles suffixées par "-post" (ex: 6.1.1-post)
+
+Pour voir la version courante:
+```
+git branch
+```
+
+Pour voir l'ensemble des versions:
+```
+git branch -all
+```
+
+> Pour tester une upgrade majeure, on peut "checkout" la branche correspondant à la dernière version mineure de la version majeure précédente. Par exemple, si la branche actuelle est la 6.1.1-post, la dernière version mineure de la version majeur précédente est la 6.0.2-post (actuellement)
+
+> Pour checkout une branche: ```git checkout 6.0.2-post```
+
 # Configurer les paramètres de base
 
 * Zookeeper
@@ -80,6 +96,7 @@ git clone https://github.com/confluentinc/cp-ansible
 # Executer le playbook
 
 ```
+cd ~
 ansible-playbook cp-ansible/all.yml
 ```
 
