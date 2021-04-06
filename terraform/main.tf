@@ -30,6 +30,8 @@ variable "guest_authorized_ips" {
   type = list(string)
   default = [
     "10.0.0.0/16"
+    # "82.65.138.101/32",     # Maxime
+    # "86.195.1.25/32"        # Eslem
   ]  
 }
 

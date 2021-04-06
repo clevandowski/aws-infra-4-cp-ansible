@@ -28,8 +28,11 @@ zookeeper:
     vm_type: zookeeper
   hosts:
     node_a_{{ cluster }}:
+      zookeeper_id: 1
     node_b_{{ cluster }}:
+      zookeeper_id: 2
     node_c_{{ cluster }}:
+      zookeeper_id: 3
 
 kafka_broker:
   vars:
@@ -37,8 +40,11 @@ kafka_broker:
     vm_type: kafka_broker
   hosts:
     node_a_{{ cluster }}:
+      broker_id: 1
     node_b_{{ cluster }}:
+      broker_id: 2
     node_c_{{ cluster }}:
+      broker_id: 3
 
 schema_registry:
   vars:

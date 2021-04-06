@@ -16,13 +16,18 @@ variable "kafka_sg_id" {
 }
 variable "schemaregistry_sg_id" {
 }
+variable "nb_clusters" {
+  type        = number
+  default     = 3
+}
 
-resource "aws_instance" "bastion_1" {
+resource "aws_instance" "bastion" {
+  count = var.nb_clusters
   tags = {
     Zone = "b"
-    Name = "bastion_1"
+    Name = "bastion_${count.index}"
     Components = "bastion"
-    Cluster = "1"
+    Cluster = count.index
   }
   ami                         = "ami-06d9c6325dbcc4e62"
   instance_type               = "t3.micro"
@@ -35,12 +40,13 @@ resource "aws_instance" "bastion_1" {
   }
 }
 
-resource "aws_instance" "node_a_1" {
+resource "aws_instance" "node_a" {
+  count = var.nb_clusters
   tags = {
     Zone = "a"
-    Name = "node_a_1"
+    Name = "node_a_${count.index}"
     Components = "zookeeper,kafka,schema_registry"
-    Cluster = "1"
+    Cluster = count.index
     ZookeeperConfiguration = jsonencode({
       zookeeper_id = 1
     })
@@ -60,12 +66,13 @@ resource "aws_instance" "node_a_1" {
   }
 }
 
-resource "aws_instance" "node_b_1" {
+resource "aws_instance" "node_b" {
+  count = var.nb_clusters
   tags = {
     Zone = "b"
-    Name = "node_b_1"
+    Name = "node_b_${count.index}"
     Components = "zookeeper,kafka,schema_registry"
-    Cluster = "1"
+    Cluster = count.index
     ZookeeperConfiguration = jsonencode({
       zookeeper_id = 2
     })
@@ -85,11 +92,12 @@ resource "aws_instance" "node_b_1" {
   }
 }
 
-resource "aws_instance" "node_c_1" {
+resource "aws_instance" "node_c" {
+  count = var.nb_clusters
   tags = {
     Zone = "c"
-    Name = "node_c_1"
-    Cluster = "1"
+    Name = "node_c_${count.index}"
+    Cluster = count.index
     Components = "zookeeper,kafka"
     ZookeeperConfiguration = jsonencode({
       zookeeper_id = 3
@@ -109,97 +117,189 @@ resource "aws_instance" "node_c_1" {
   }
 }
 
-resource "aws_instance" "bastion_2" {
-  tags = {
-    Zone = "b"
-    Name = "bastion_2"
-    Components = "bastion"
-    Cluster = "2"
-  }
-  ami                         = "ami-06d9c6325dbcc4e62"
-  instance_type               = "t3.micro"
-  key_name                    = var.key_pair.key_name
-  subnet_id                   = var.subnet_b_id
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [var.sg_id]
-  root_block_device {
-    volume_size = 32
-  }
-}
+# resource "aws_instance" "bastion_1" {
+#   tags = {
+#     Zone = "b"
+#     Name = "bastion_1"
+#     Components = "bastion"
+#     Cluster = "1"
+#   }
+#   ami                         = "ami-06d9c6325dbcc4e62"
+#   instance_type               = "t3.micro"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_b_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id]
+#   root_block_device {
+#     volume_size = 32
+#   }
+# }
 
-resource "aws_instance" "node_a_2" {
-  tags = {
-    Zone = "a"
-    Name = "node_a_2"
-    Components = "zookeeper,kafka,schema_registry"
-    Cluster = "2"
-    ZookeeperConfiguration = jsonencode({
-      zookeeper_id = 1
-    })
-    KafkaConfiguration = jsonencode({
-      broker_id = 1
-    })
-    SchemaRegistryConfiguration = jsonencode({})
-  }
-  ami                         = var.ami_id
-  instance_type               = "t3.large"
-  key_name                    = var.key_pair.key_name
-  subnet_id                   = var.subnet_a_id
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
-  root_block_device {
-    volume_size = 64
-  }
-}
+# resource "aws_instance" "node_a_1" {
+#   tags = {
+#     Zone = "a"
+#     Name = "node_a_1"
+#     Components = "zookeeper,kafka,schema_registry"
+#     Cluster = "1"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 1
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 1
+#     })
+#     SchemaRegistryConfiguration = jsonencode({})
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_a_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
 
-resource "aws_instance" "node_b_2" {
-  tags = {
-    Zone = "b"
-    Name = "node_b_2"
-    Components = "zookeeper,kafka,schema_registry"
-    Cluster = "2"
-    ZookeeperConfiguration = jsonencode({
-      zookeeper_id = 2
-    })
-    KafkaConfiguration = jsonencode({
-      broker_id = 2
-    })
-    SchemaRegistryConfiguration = jsonencode({})
-  }
-  ami                         = var.ami_id
-  instance_type               = "t3.large"
-  key_name                    = var.key_pair.key_name
-  subnet_id                   = var.subnet_b_id
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
-  root_block_device {
-    volume_size = 64
-  }
-}
+# resource "aws_instance" "node_b_1" {
+#   tags = {
+#     Zone = "b"
+#     Name = "node_b_1"
+#     Components = "zookeeper,kafka,schema_registry"
+#     Cluster = "1"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 2
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 2
+#     })
+#     SchemaRegistryConfiguration = jsonencode({})
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_b_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
 
-resource "aws_instance" "node_c_2" {
-  tags = {
-    Zone = "c"
-    Name = "node_c_2"
-    Cluster = "2"
-    Components = "zookeeper,kafka"
-    ZookeeperConfiguration = jsonencode({
-      zookeeper_id = 3
-    })
-    KafkaConfiguration = jsonencode({
-      broker_id = 3
-    })
-  }
-  ami                         = var.ami_id
-  instance_type               = "t3.large"
-  key_name                    = var.key_pair.key_name
-  subnet_id                   = var.subnet_c_id
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
-  root_block_device {
-    volume_size = 64
-  }
-}
+# resource "aws_instance" "node_c_1" {
+#   tags = {
+#     Zone = "c"
+#     Name = "node_c_1"
+#     Cluster = "1"
+#     Components = "zookeeper,kafka"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 3
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 3
+#     })
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_c_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
+
+# resource "aws_instance" "bastion_2" {
+#   tags = {
+#     Zone = "b"
+#     Name = "bastion_2"
+#     Components = "bastion"
+#     Cluster = "2"
+#   }
+#   ami                         = "ami-06d9c6325dbcc4e62"
+#   instance_type               = "t3.micro"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_b_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id]
+#   root_block_device {
+#     volume_size = 32
+#   }
+# }
+
+# resource "aws_instance" "node_a_2" {
+#   tags = {
+#     Zone = "a"
+#     Name = "node_a_2"
+#     Components = "zookeeper,kafka,schema_registry"
+#     Cluster = "2"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 1
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 1
+#     })
+#     SchemaRegistryConfiguration = jsonencode({})
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_a_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
+
+# resource "aws_instance" "node_b_2" {
+#   tags = {
+#     Zone = "b"
+#     Name = "node_b_2"
+#     Components = "zookeeper,kafka,schema_registry"
+#     Cluster = "2"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 2
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 2
+#     })
+#     SchemaRegistryConfiguration = jsonencode({})
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_b_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
+
+# resource "aws_instance" "node_c_2" {
+#   tags = {
+#     Zone = "c"
+#     Name = "node_c_2"
+#     Cluster = "2"
+#     Components = "zookeeper,kafka"
+#     ZookeeperConfiguration = jsonencode({
+#       zookeeper_id = 3
+#     })
+#     KafkaConfiguration = jsonencode({
+#       broker_id = 3
+#     })
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = "t3.large"
+#   key_name                    = var.key_pair.key_name
+#   subnet_id                   = var.subnet_c_id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [var.sg_id, var.zookeeper_sg_id, var.kafka_sg_id, var.schemaregistry_sg_id]
+#   root_block_device {
+#     volume_size = 64
+#   }
+# }
 
 
 # resource "aws_instance" "bastion_3" {

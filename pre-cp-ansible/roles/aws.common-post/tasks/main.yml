@@ -3,7 +3,14 @@
   fetch: "src=~ubuntu/.ssh/id_rsa.pub dest=buffer/id_rsa_{{ cluster }}.pub flat=yes"
   when: vm_type == "bastion"
 
-- name: Add public ssh key from bastion to ~/.ssh/authorized_keys
+- name: Add public ssh key from users to ~/.ssh/authorized_keys of bastion
+  authorized_key:
+    user: ubuntu
+    state: present
+    key: "{{ lookup('file', 'ssh_public_keys/id_rsa.pub.{{ cluster }}') }}"
+  when: vm_type == "bastion"
+
+- name: Add public ssh key from bastion to ~/.ssh/authorized_keys of kafka's VMs
   authorized_key:
     user: centos
     state: present
@@ -40,4 +47,13 @@
     dest: ~ubuntu/.env.sh
     owner: ubuntu
     group: ubuntu
+  when: vm_type == "bastion"
+
+- name: Copy client conf
+  ansible.builtin.copy:
+    src: client-conf
+    dest: ~ubuntu
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
   when: vm_type == "bastion"
